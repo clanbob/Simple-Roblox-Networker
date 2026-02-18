@@ -158,3 +158,15 @@ print(LocalFn:Invoke(2, 3)) -- 5
 - Remote names are strings and must match between caller/listener.
 - `Client:RemoteEvent(name)` waits for server-created remotes if they are missing.
 - `Destroy()` exists on sessions if you need to clean up the underlying instance.
+
+## Optimization tips
+
+If you want better runtime performance and fewer networking issues, these are the best wins:
+
+- Prefer `UnreliableRemoteEvent` for high-frequency, non-critical updates (for example camera/FX snapshots).
+- Use `RemoteFunction` only when you need a direct response; otherwise use `RemoteEvent` to avoid yielding.
+- Reuse session objects (`NetWorker.Server:RemoteEvent("Name")`) instead of recreating them repeatedly in hot paths.
+- Use bindables (`BindableEvent`/`BindableFunction`) for same-side communication to avoid network serialization cost.
+- Keep payloads compact (numbers, short strings, IDs) and avoid sending large tables every frame.
+- Use `ConnectForPlayer` / condition helpers to filter early and reduce callback work.
+- Call `Destroy()` on sessions you no longer need to prevent stale remotes/connections.

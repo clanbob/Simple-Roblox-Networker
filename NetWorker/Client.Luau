@@ -26,13 +26,17 @@ local function wait_for_remote(name: string, folder: Folder)
 	return remote
 end
 
+local function is_bindable_type(remote_type: string): boolean
+	return remote_type == net_worker.EventTypes.BindableEvent or remote_type == net_worker.FunctionTypes.BindableFunction
+end
+
 local function new_com(info: { name: string, remote_type: string, folder: Folder, on_server: boolean })
 	local remote = info.folder:FindFirstChild(info.name)
 	if remote then
 		return remote
 	end
 
-	if info.on_server or info.remote_type == net_worker.EventTypes.BindableEvent then
+	if info.on_server or is_bindable_type(info.remote_type) then
 		remote = Instance.new(info.remote_type)
 		remote.Name = info.name
 		remote.Parent = info.folder
